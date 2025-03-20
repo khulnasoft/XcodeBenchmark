@@ -1,5 +1,6 @@
 readonly PATH_TO_PROJECT=$(pwd)/XcodeBenchmark.xcworkspace
 readonly PATH_TO_DERIVED=$(pwd)/DerivedData
+readonly PATH_TO_RESULT_BUNDLE=$(pwd)/BenchmarkBundle.xcresult
 
 clear
 
@@ -18,7 +19,10 @@ if [ -n "$PATH_TO_PROJECT" ]; then
 			   -scheme XcodeBenchmark \
 			   -destination generic/platform=iOS \
 			   -derivedDataPath "$PATH_TO_DERIVED" \
-			   build
+      			   -resultBundlePath "$PATH_TO_RESULT_BUNDLE" \
+			   -showBuildTimingSummary build
+
+	./xclogparser-0.23.8 parse --project XcodeBenchmark --derived_data $PATH_TO_DERIVED --reporter chromeTracer > $REPORT_NAME.json
 
 	echo "System Version:" "$(sw_vers -productVersion)"
 	xcodebuild -version | grep "Xcode"
@@ -55,6 +59,7 @@ if [ -n "$PATH_TO_PROJECT" ]; then
 	echo "2️⃣  Share your results at https://github.com/devMEremenko/XcodeBenchmark"
 
 	rm -rfd "$PATH_TO_DERIVED"
+ 	rm -rfd "$PATH_TO_RESULT_BUNDLE"
 	
 else
     echo "XcodeBenchmark.xcworkspace was not found in the current folder"
